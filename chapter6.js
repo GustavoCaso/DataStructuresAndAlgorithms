@@ -10,6 +10,8 @@ function LList(){
   this.remove = remove;
   this.findPrevious = findPrevious;
   this.display = display;
+  this.advance = advance;
+  this.show = show;
 
   function find(item){
     var currNode = this.head;
@@ -44,9 +46,21 @@ function LList(){
   function display(){
     var currNode = this.head;
     while((currNode.next !== null)){
-      console.log(currNode.next.element);
+      this.show(currNode);
       currNode = currNode.next;
     }
+  }
+
+  function advance(n){
+    var currNode = this.head;
+    for(var i = 0; i<n; i++){
+      currNode = currNode.next;
+    }
+    return currNode;
+  }
+
+  function show(node){
+    console.log(node.next.element);
   }
 }
 
@@ -57,5 +71,10 @@ cities.insert("Alma", "Russellville");
 cities.insert("Madrid", "Alma");
 cities.display();
 console.log();
+console.log('Removing Russellville');
+console.log();
 cities.remove("Russellville");
 cities.display();
+
+// We have to test a few more examples by creating a double linked list
+// and a circular linked list
