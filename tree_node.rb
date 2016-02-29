@@ -40,12 +40,64 @@ class TreeNode
     left_child && right_child
   end
 
-  def replace_node_data(key, val, lc, rc)
+  def replace_node_data(key:, val:, lc: nil, rc: nil)
     self.key = key
     self.val = val
     self.left_child = lc
     self.right_child = rc
     self.left_child.parent = self if self.has_left_child?
     self.right_child.parent = self if self.has_right_child?
+  end
+
+  def find_successor
+    succ = nil
+    if has_right_child?
+      succ = right_child.find_min
+    else
+      if parent
+        if is_left_child?
+          succ = parent
+        else
+          parent.right_child = nil
+          succ = parent.find_successor
+          parent.right_child = self
+        end
+      end
+    end
+    succ
+  end
+
+  def find_min
+    current = self
+    while current.has_left_child?
+      current = current.left_child
+    end
+    current
+  end
+
+  def splice_out
+    if is_leaf?
+      if is_left_child?
+        parent.left_child = nil
+      else
+        parent.right_child = nil
+      end
+    elsif has_any_children?
+      if has_left_child?
+        if is_left_child?
+          parent.left_child = left_child
+        else
+          parent.right_child = left_child
+        end
+        left_child.parent = parent
+      else
+        if is_left_child?
+          parent.left_child = right_child
+        else
+          parent.right_child = right_child
+        end
+        right_child.parent = parent
+      end
+    end
   end
 end

@@ -45,6 +45,23 @@ class BinarySearchTree
     get(key) ? true : false
   end
 
+  def delete(key)
+    if size > 1
+      node_to_remove = _get(key, root)
+      if node_to_remove
+        _remove(node_to_remove)
+        self.size = self.size - 1
+      else
+        fail 'Not Key in Tree'
+      end
+    elsif size == 1 && root.key == key
+      self.root = nil
+      self.size = self.size - 1
+    else
+      fail 'Not Key in Tree'
+    end
+  end
+
   private
   def _put(key, val, current_node)
     if key < current_node.key
@@ -71,6 +88,51 @@ class BinarySearchTree
       _get(key, current_node.left_child)
     else
       _get(key, current_node.right_child)
+    end
+  end
+
+  def _remove(current_node)
+    if current_node.is_leaf?
+      if current_node == current_node.parent.left_child
+        current_node.parent.left_child = nil
+      else
+        current_node.parent.right_child = nil
+      end
+    elsif current_node.has_both_children?
+      succ = current_node.find_successor
+      succ.splice_out
+      current_node.key = succ.key
+      current_node.value = succ.value
+    else
+      if current_node.has_left_child?
+        if current_node.is_left_child?
+          current_node.left_child.parent = current_node.parent
+          current_node.parent.left_child = current_node.left_child
+        elsif current_node.is_right_child?
+          current_node.left_child.parent = current_node.parent
+          current_node.parent.right_child = current_node.left_child
+        else
+          current_node.replace_node_data(key: current_node.left_child.key,
+                                         val: current_node.left_child.value,
+                                         lc: current_node.left_child.left_child,
+                                         rc: current_node.left_child.right_child
+            )
+        end
+      else
+        if current_node.is_left_child?
+          current_node.right_child.parent = current_node.parent
+          current_node.parent.left_child = current_node.right_child
+        elsif current_node.is_right_child?
+          current_node.right_child.parent = current_node.parent
+          current_node.parent.right_child = current_node.right_child
+        else
+          current_node.replace_node_data(key: current_node.right_child.key,
+                                         val: current_node.right_child.value,
+                                         lc: current_node.right_child.left_child,
+                                         rc: current_node.right_child.right_child
+            )
+        end
+      end
     end
   end
 end
